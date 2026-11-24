@@ -81,3 +81,40 @@ desktop.ini
 # ==============================
 *.log
 logs/
+
+# ==============================
+# FRONTEND / REACT / VITE
+# ==============================
+
+# Node dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Vite cache
+.vite/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Testing / coverage
+coverage/
+
+# TypeScript build cache (if introduced later)
+*.tsbuildinfo
+
+# Local deployment output
+.vercel/
+.netlify/
+*svg
+*.json
+*.md
