@@ -4,6 +4,7 @@ import pandas as pd
 from io import BytesIO
 
 from preprocessing.cleaner import clean_transactions
+from analytics.summary import calculate_summary
 
 
 app = FastAPI(
@@ -42,9 +43,13 @@ async def upload_transactions(file: UploadFile = File(...)):
 
         cleaned_df = clean_transactions(df)
 
+        # Calculate financial summary
+        summary = calculate_summary(cleaned_df)
+
         return {
-            "message": "Transactions uploaded and cleaned successfully.",
+            "message": "Transactions uploaded and analysed successfully.",
             "total_transactions": len(cleaned_df),
+            "summary": summary,
             "transactions": cleaned_df.astype(
                 {"date": str}
             ).to_dict(orient="records")
