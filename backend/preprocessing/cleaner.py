@@ -1,3 +1,4 @@
+
 import pandas as pd
 
 
@@ -5,6 +6,9 @@ def clean_transactions(df: pd.DataFrame) -> pd.DataFrame:
     """
     Cleans and standardizes financial transaction data.
     """
+
+    # Work on a copy to avoid modifying the original DataFrame
+    df = df.copy()
 
     # Standardize column names
     df.columns = (
@@ -15,7 +19,7 @@ def clean_transactions(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Check required columns
-    required_columns = ["date", "description", "amount"]
+    required_columns = ["date", "description", "amount", "type"]
 
     for column in required_columns:
         if column not in df.columns:
@@ -32,6 +36,30 @@ def clean_transactions(df: pd.DataFrame) -> pd.DataFrame:
         .astype(str)
         .str.strip()
     )
+
+    # Standardize transaction types
+    type_mapping = {
+        "income": "income",
+        "credit": "income",
+        "deposit": "income",
+        "expense": "expense",
+        "debit": "expense",
+        "withdrawal": "expense"
+    }
+
+    df["type"] = (
+        df["type"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        .map(type_mapping)
+    )
+
+    # Reject unknown transaction types
+    if df["type"].isna().any():
+        raise ValueError(
+            "Invalid transaction type. Use income or expense."
+        )
 
     # Convert dates
     df["date"] = pd.to_datetime(
@@ -50,8 +78,14 @@ def clean_transactions(df: pd.DataFrame) -> pd.DataFrame:
         subset=["date", "description", "amount"]
     )
 
-    # Remove empty descriptions
-    df = df[df["description"] != ""]
+    # Standardize amounts as positive values
+    df["amount"] = df["amount"].abs()
+
+    # Remove empty descriptions and zero-value transactions
+    df = df[
+        (df["description"] != "") &
+        (df["amount"] > 0)
+    ]
 
     # Sort transactions by date
     df = df.sort_values("date")
