@@ -5,12 +5,20 @@ from io import BytesIO
 
 from preprocessing.cleaner import clean_transactions
 from analytics.summary import calculate_summary
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI(
     title="FINSIGHT API",
     description="AI-Powered Personal Financial Intelligence System",
     version="1.0.0"
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
